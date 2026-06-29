@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Gangotri Firestone (Hexochems)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Outfit:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .inquiry-badge.liquid-base {
+            background: rgba(13, 148, 136, 0.15);
+            color: var(--accent-teal);
+            border: none;
+        }
+        .inquiry-badge.powder-base {
+            background: rgba(249, 115, 22, 0.15);
+            color: var(--accent-orange);
+            border: none;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Global Live Background Canvas -->
+    <canvas id="live-canvas"></canvas>
+
+    <!-- --- Header --- -->
+    <header class="header scrolled always-scrolled">
+        <div class="container nav-container">
+            <a href="/" class="logo-link">
+                <img src="/static/images/hexochems_logo.png" alt="Hexochems Logo" class="logo-img" onerror="this.style.display='none'">
+                <div>
+                    <h1 class="logo-text">GANGOTRI <span>FIRESTONE LLP</span></h1>
+                    <span class="logo-subtitle">Administration Panel</span>
+                </div>
+            </a>
+            <nav class="nav-menu">
+                <a href="/" class="nav-link">Home</a>
+                <a href="/products" class="nav-link">Products</a>
+                <a href="/about" class="nav-link">About Us</a>
+                <a href="/contact" class="nav-link">Contact Us</a>
+                {% if authenticated %}
+                    <a href="/admin/logout" class="btn btn-secondary" style="padding: 0.5rem 1.5rem; font-size: 0.85rem; margin-left: 1rem;">Logout</a>
+                {% else %}
+                    <a href="/admin" class="btn btn-secondary" style="padding: 0.5rem 1.5rem; font-size: 0.85rem; margin-left: 1rem;">Admin Panel</a>
+                {% endif %}
+            </nav>
+            <div class="nav-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+
+    {% if not authenticated %}
+    <!-- --- ADMIN LOGIN VIEW --- -->
+    <section class="admin-hero">
+        <div class="container">
+            <div class="admin-login-wrapper glass-panel">
+                <div class="admin-login-icon"><i class="fas fa-lock"></i></div>
+                <h3 class="gradient-text" style="font-size: 1.8rem; margin-bottom: 0.5rem;">Admin Access</h3>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 2rem;">Please enter the company admin passcode to manage inquiries and products.</p>
+                
+                <div id="login-error-msg" class="form-status error" style="display: none; margin-bottom: 1.5rem; padding: 0.8rem;"></div>
+
+                <form id="admin-login-form">
+                    <div class="form-group" style="text-align: left;">
+                        <label for="admin-passcode" class="form-label">Admin Passcode</label>
+                        <input type="password" id="admin-passcode" class="form-input" placeholder="••••••••" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Authenticate <i class="fas fa-sign-in-alt"></i></button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    {% else %}
+    <!-- --- ADMIN DASHBOARD VIEW (AUTHENTICATED) --- -->
+    <section class="admin-hero" style="padding-bottom: 2rem;">
+        <div class="container">
+            <h2 class="gradient-text" style="font-size: 2.2rem; margin-bottom: 0.5rem;">Control Dashboard</h2>
+            <p style="color: var(--text-secondary);">Manage customer inquiries, view statistics, and update products lists dynamically.</p>
+        </div>
+    </section>
+
+    <section class="admin-dashboard-body" style="padding: 3rem 0 6rem 0; background: var(--bg-darker);">
+        <div class="container">
+            
+            <!-- Dashboard Navigation Tabs -->
+            <div class="admin-tabs">
+                <button class="admin-tab-btn active" data-tab="inquiries">
+                    <i class="fas fa-envelope-open-text" style="margin-right: 0.5rem;"></i> Customer Inquiries (<span id="inquiry-count">{{ inquiries|length }}</span>)
+                </button>
+                <button class="admin-tab-btn" data-tab="products">
+                    <i class="fas fa-boxes" style="margin-right: 0.5rem;"></i> Products Directory ({{ products|length }})
+                </button>
+            </div>
+
+            <!-- TAB 1: INQUIRIES LIST -->
+            <div id="admin-sec-inquiries" class="admin-panel-section active">
+                {% if inquiries %}
+                    {% for inq in inquiries %}
+                    <div class="inquiry-card glass-panel">
+                        <div class="inquiry-header">
+                            <div class="inquiry-summary">
+                                <span class="inquiry-client-name">{{ inq.name }}</span>
+                                {% if inq.company %}
+                                    <span class="inquiry-client-company"><i class="fas fa-building" style="margin-right: 0.3rem;"></i> {{ inq.company }}</span>
+                                {% endif %}
+                                <span class="inquiry-time"><i class="fas fa-clock" style="margin-right: 0.3rem;"></i> {{ inq.created_at[:16].replace('T', ' ') if (inq.created_at and inq.created_at|length >= 16) else 'Just now' }}</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 1.5rem;">
+                                <div style="font-size: 0.9rem; color: var(--accent-orange);">
+                                    View Message <i class="fas fa-chevron-down" style="margin-left: 0.5rem;"></i>
+                                </div>
+                                <button class="icon-btn delete btn-delete-inquiry" data-id="{{ inq.id or inq.created_at }}" data-name="{{ inq.name }}" title="Delete Inquiry">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="inquiry-details-drawer">
+                            <div class="inquiry-details-grid">
+                                <div>
+                                    <h4 style="margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">Contact Information</h4>
+                                    <table class="inquiry-meta-table">
+                                        <tr>
+                                            <td>Phone:</td>
+                                            <td><strong>{{ inq.phone }}</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Email:</td>
+                                            <td><strong>{{ inq.email or 'N/A' }}</strong></td>
+                                        </tr>
+                                    </table>
+                                    
+                                    {% if inq.products %}
+                                    <h4 style="margin-top: 1.5rem; margin-bottom: 0.8rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">Interested Products</h4>
+                                    <div>
+                                        {% for prod in inq.products %}
+                                            <span class="inquiry-badge">{{ prod }}</span>
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <h4 style="margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">Message details</h4>
+                                    <div class="inquiry-msg-box">
+                                        <p style="white-space: pre-wrap; font-size: 0.95rem; color: var(--text-primary);">{{ inq.message }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="glass-panel text-center" style="padding: 4rem;">
+                        <i class="fas fa-inbox" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem;"></i>
+                        <p style="color: var(--text-secondary);">No customer inquiries found.</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- TAB 2: PRODUCTS CRUD DIRECTORY -->
+            <div id="admin-sec-products" class="admin-panel-section">
+                
+                <div class="admin-header-actions">
+                    <h3 style="font-size: 1.5rem;">All Directory Products</h3>
+                    <button id="btn-open-prod-modal" class="btn btn-primary"><i class="fas fa-plus"></i> Add New Product</button>
+                </div>
+
+                <div class="glass-panel" style="overflow-x: auto;">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Code</th>
+                                <th>Product Name</th>
+                                <th>Category</th>
+                                <th>Packaging</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for prod in products %}
+                            <tr>
+                                <td><strong>{{ prod.code }}</strong></td>
+                                <td>{{ prod.name }}</td>
+                                <td>
+                                    <span class="inquiry-badge {% if prod.category == 'Liquid Base' %}liquid-base{% else %}powder-base{% endif %}">
+                                        {{ prod.category }}
+                                    </span>
+                                </td>
+                                <td>{{ prod.packaging }}</td>
+                                <td>
+                                    <div class="action-btn-group">
+                                        <button class="icon-btn btn-edit-product" data-id="{{ prod.id }}" title="Edit Product"><i class="fas fa-edit"></i></button>
+                                        <button class="icon-btn delete btn-delete-product" data-id="{{ prod.id }}" data-name="{{ prod.name }}" title="Delete Product"><i class="fas fa-trash-alt"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- --- PRODUCT EDIT/ADD DIALOG MODAL --- -->
+    <div id="product-modal" class="modal-overlay">
+        <div class="modal-content glass-panel">
+            <span id="btn-close-prod-modal" class="modal-close">&times;</span>
+            <h3 id="modal-title" class="gradient-text" style="font-size: 1.8rem; margin-bottom: 2rem;">Add Product</h3>
+            
+            <form id="product-form" enctype="multipart/form-data">
+                <!-- ID/Slug -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="prod-form-id" class="form-label">Unique Slug ID (e.g. hexochems-bjm-445)</label>
+                        <input type="text" id="prod-form-id" name="id" class="form-input" placeholder="slug-name-code" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="prod-form-category" class="form-label">Category</label>
+                        <select id="prod-form-category" name="category" class="form-input" style="height: 48px;">
+                            <option value="Liquid Base">Liquid Base (Unit 1)</option>
+                            <option value="Powder Base">Powder Base (Unit 2)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Name & Code -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="prod-form-name" class="form-label">Product Name *</label>
+                        <input type="text" id="prod-form-name" name="name" class="form-input" placeholder="e.g. HEXOCHEMS BJM 445" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="prod-form-code" class="form-label">Product Code *</label>
+                        <input type="text" id="prod-form-code" name="code" class="form-input" placeholder="e.g. BJM 445" required>
+                    </div>
+                </div>
+
+                <!-- Tagline -->
+                <div class="form-group">
+                    <label for="prod-form-tagline" class="form-label">Tagline / Brief Highlight *</label>
+                    <input type="text" id="prod-form-tagline" name="tagline" class="form-input" placeholder="e.g. AAC Block Joining Mortar" required>
+                </div>
+
+                <!-- Description -->
+                <div class="form-group">
+                    <label for="prod-form-desc" class="form-label">Full Description *</label>
+                    <textarea id="prod-form-desc" name="description" class="form-input" placeholder="Detailed product usage, features and nature..." required></textarea>
+                </div>
+
+                <!-- Specs, Benefits & Application Guide arrays as textual lists -->
+                <div class="form-group">
+                    <label for="prod-form-benefits" class="form-label">Key Benefits (One per line)</label>
+                    <textarea id="prod-form-benefits" name="key_benefits" class="form-input" placeholder="High bond strength&#10;Excellent splitting tensile strength"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="prod-form-features" class="form-label">Technical Parameters (Format: name:value, one per line)</label>
+                    <textarea id="prod-form-features" name="technical_features" class="form-input" placeholder="Form:Powder&#10;Color:Grey&#10;Compressive Strength:27 MPa"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="prod-form-guides" class="form-label">Application Steps (One per line)</label>
+                    <textarea id="prod-form-guides" name="application_guide" class="form-input" placeholder="Mix dry powder with water&#10;Apply with notched trowel"></textarea>
+                </div>
+
+                <!-- Dosage, Compliance, Packaging -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="prod-form-dosage" class="form-label">Recommended Dosage</label>
+                        <input type="text" id="prod-form-dosage" name="dosage" class="form-input" placeholder="e.g. 100-250g per 50kg bag">
+                    </div>
+                    <div class="form-group">
+                        <label for="prod-form-compliance" class="form-label">Standards Compliance</label>
+                        <input type="text" id="prod-form-compliance" name="compliance" class="form-input" placeholder="e.g. IS 9103:1999">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="prod-form-packaging" class="form-label">Packaging & Supply</label>
+                        <input type="text" id="prod-form-packaging" name="packaging" class="form-input" placeholder="e.g. 40 kg bags">
+                    </div>
+                    <div class="form-group">
+                        <label for="prod-form-image-file" class="form-label">Product Image File</label>
+                        <input type="file" id="prod-form-image-file" name="image_file" class="form-input" accept="image/*">
+                        <input type="hidden" id="prod-form-image-url" name="image_url">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Save Product <i class="fas fa-save"></i></button>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+
+    <script src="/static/js/main.js"></script>
+    <script src="/static/js/admin.js"></script>
+</body>
+</html>

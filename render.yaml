@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: gangotri-firestone-llp
+    runtime: python
+    rootDirectory: website
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10.0
+      - key: FLASK_SECRET_KEY
+        generateValue: true
+      - key: ADMIN_PASSCODE
+        sync: false
+      - key: USE_FIREBASE
+        value: "true"

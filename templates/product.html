@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ product.name }} Specs & Details | Gangotri Firestone (Hexochems)</title>
+    <meta name="description" content="Technical details, specifications, and application guide for {{ product.name }} ({{ product.code }}), manufactured by Gangotri Firestone.">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Outfit:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="{% if product.category == 'Liquid Base' %}liquid-accent{% else %}powder-accent{% endif %}">
+
+    <!-- Global Live Background Canvas -->
+    <canvas id="live-canvas"></canvas>
+
+    <!-- --- Header / Navbar --- -->
+    <header class="header scrolled always-scrolled">
+        <div class="container nav-container">
+            <a href="/" class="logo-link">
+                <img src="/static/images/hexochems_logo.png" alt="Hexochems Logo" class="logo-img" onerror="this.style.display='none'">
+                <div>
+                    <h1 class="logo-text">GANGOTRI <span>FIRESTONE LLP</span></h1>
+                    <span class="logo-subtitle">Hexochems Brand Products</span>
+                </div>
+            </a>
+            <nav class="nav-menu">
+                <a href="/" class="nav-link">Home</a>
+                <a href="/products" class="nav-link">Products</a>
+                <a href="/about" class="nav-link">About Us</a>
+                <a href="/contact" class="nav-link">Contact Us</a>
+                <a href="/admin" class="btn btn-secondary" style="padding: 0.5rem 1.5rem; font-size: 0.85rem;">Admin Panel</a>
+            </nav>
+            <div class="nav-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- --- Product Hero Section --- -->
+    <section class="product-detail-hero">
+        <div class="container">
+            <div class="product-detail-grid">
+                
+                <!-- Gallery Image -->
+                <div class="product-detail-gallery {% if product.category == 'Liquid Base' %}liquid{% else %}powder{% endif %} glass-panel">
+                    {% if product.category == 'Liquid Base' %}
+                        {% set drum_products = ["HEXA SNF 200", "HEXAPLAST 550", "HEXAPLAST 750", "HEXAPLAST 900"] %}
+                        {% if product.name in drum_products %}
+                            <img src="/static/images/drum.png" alt="Drum Placeholder" style="max-height: 100%; max-width: 100%; object-fit: contain; filter: drop-shadow(0 0 20px rgba(13, 148, 136, 0.35));" onerror="this.onerror=null; this.src='/static/images/hexochems_logo.png'">
+                        {% else %}
+                            <img src="/static/images/carbo.png" alt="Carbo Placeholder" style="max-height: 100%; max-width: 100%; object-fit: contain; filter: drop-shadow(0 0 20px rgba(13, 148, 136, 0.35));" onerror="this.onerror=null; this.src='/static/images/hexochems_logo.png'">
+                        {% endif %}
+                    {% else %}
+                        <img src="/static/images/powder_bag.webp" alt="Powder Bag" style="max-height: 100%; max-width: 100%; object-fit: contain; filter: drop-shadow(0 0 20px rgba(249, 115, 22, 0.35));" onerror="this.onerror=null; this.src='/static/images/hexochems_logo.png'">
+                    {% endif %}
+                    <span class="product-badge-large">{{ product.category }}</span>
+                </div>
+
+                <!-- Basic Meta -->
+                <div class="product-detail-intro">
+                    <span class="product-code" style="font-size: 0.9rem; margin-bottom: 0.8rem; display: inline-block;">Product Code: {{ product.code }}</span>
+                    <h2 class="{% if product.category == 'Liquid Base' %}gradient-text-teal{% else %}gradient-text{% endif %}" style="font-size: 2.8rem; margin-bottom: 1rem; line-height: 1.1;">{{ product.name }}</h2>
+                    <p class="product-tagline {% if product.category == 'Liquid Base' %}gradient-text-teal{% else %}gradient-text{% endif %}" style="font-size: 1.25rem; font-weight: 500; margin-bottom: 1.5rem;">
+                        {{ product.tagline }}
+                    </p>
+                    <p style="color: var(--text-secondary); font-size: 1.05rem; margin-bottom: 2.5rem; line-height: 1.7;">
+                        {{ product.description }}
+                    </p>
+                    <a href="/contact?product={{ product.name }}" class="btn {% if product.category == 'Liquid Base' %}btn-teal{% else %}btn-primary{% endif %}">
+                        Inquire About This Product <i class="fas fa-paper-plane"></i>
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- --- Technical & Usage Guide --- -->
+    <section class="product-detail-body">
+        <div class="container">
+            <div class="product-specs-grid">
+                
+                <!-- Main Specifications & Guides -->
+                <div class="main-specs-content">
+                    
+                    <!-- Key Benefits -->
+                    {% if product.key_benefits %}
+                    <div style="margin-bottom: 4rem;">
+                        <h3 class="{% if product.category == 'Liquid Base' %}gradient-text-teal{% else %}gradient-text{% endif %}" style="font-size: 1.8rem; margin-bottom: 1.5rem;">Key Benefits & Advantages</h3>
+                        <ul class="bullet-list">
+                            {% for benefit in product.key_benefits %}
+                                <li>{{ benefit }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+
+                    <!-- Technical Features Table -->
+                    {% if product.technical_features %}
+                    <div style="margin-bottom: 4rem;">
+                        <h3 class="{% if product.category == 'Liquid Base' %}gradient-text-teal{% else %}gradient-text{% endif %}" style="font-size: 1.8rem; margin-bottom: 1.5rem;">Technical Specifications</h3>
+                        <table class="specs-table glass-panel">
+                            <thead>
+                                <tr>
+                                    <th>Parameter / Property</th>
+                                    <th>Specifications</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for key, val in product.technical_features.items() %}
+                                <tr>
+                                    <td>{{ key }}</td>
+                                    <td>{{ val }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% endif %}
+
+                    <!-- Application Guide -->
+                    {% if product.application_guide %}
+                    <div style="margin-bottom: 3rem;">
+                        <h3 class="{% if product.category == 'Liquid Base' %}gradient-text-teal{% else %}gradient-text{% endif %}" style="font-size: 1.8rem; margin-bottom: 1.5rem;">Application Guide</h3>
+                        <ol class="bullet-list" style="list-style-type: decimal;">
+                            {% for step in product.application_guide %}
+                                <li>{{ step }}</li>
+                            {% endfor %}
+                        </ol>
+                    </div>
+                    {% endif %}
+
+                </div>
+
+                <!-- Sidebar Guidelines -->
+                <div class="specs-sidebar">
+                    
+                    {% if product.dosage %}
+                    <div class="sidebar-box glass-panel">
+                        <h4 class="sidebar-title">Recommended Dosage</h4>
+                        <p class="sidebar-desc">{{ product.dosage }}</p>
+                    </div>
+                    {% endif %}
+
+                    {% if product.compliance %}
+                    <div class="sidebar-box glass-panel">
+                        <h4 class="sidebar-title">Standards Compliance</h4>
+                        <p class="sidebar-desc">{{ product.compliance }}</p>
+                    </div>
+                    {% endif %}
+
+                    {% if product.packaging %}
+                    <div class="sidebar-box glass-panel">
+                        <h4 class="sidebar-title">Packaging & Supply</h4>
+                        <p class="sidebar-desc">{{ product.packaging }}</p>
+                    </div>
+                    {% endif %}
+
+                    <!-- Safe Storage Info -->
+                    <div class="sidebar-box glass-panel" style="border-top: 3px solid #EF4444;">
+                        <h4 class="sidebar-title" style="border-left-color: #EF4444;">Storage & Safety</h4>
+                        <p class="sidebar-desc" style="margin-bottom: 0.8rem;">Store in dry, cool conditions away from direct sunlight. Shelf life is typically 12 months from manufacture if unopened.</p>
+                        <p class="sidebar-desc" style="font-size: 0.8rem; color: var(--text-muted);"><i class="fas fa-exclamation-triangle" style="color: #EF4444; margin-right: 0.3rem;"></i> Non-toxic under normal handling, but avoid skin/eye contact. Wear protective gloves and goggles.</p>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- --- Footer --- -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <h4>GANGOTRI <span>FIRESTONE</span></h4>
+                    <p class="footer-desc">One of Gujarat and Maharashtra's oldest and most reliable manufacturers of premium dry-mix block joining mortars, tile adhesives, and liquid superplasticizers.</p>
+                    <p class="footer-desc"><i class="fas fa-certificate" style="color: var(--accent-orange); margin-right: 0.5rem;"></i> ISO 9001:2015 Quality Management Certified.</p>
+                </div>
+                <div>
+                    <h5 class="footer-heading">Quick Links</h5>
+                    <ul class="footer-links">
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/products">Products</a></li>
+                        <li><a href="/about">About Us</a></li>
+                        <li><a href="/contact">Contact Us</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="footer-heading">Products</h5>
+                    <ul class="footer-links">
+                        <li><a href="/products">Liquid Admixtures</a></li>
+                        <li><a href="/products">Waterproofing Compounds</a></li>
+                        <li><a href="/products">Curing Compounds</a></li>
+                        <li><a href="/products">Bonding Agents</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="footer-heading">Business Hours</h5>
+                    <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Monday - Saturday</p>
+                    <p style="font-size: 0.9rem; color: var(--text-primary); font-weight: bold;">09:00 AM - 06:00 PM</p>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2026 Gangotri Firestone LLP. All Rights Reserved. Brand Name: Hexochems.</p>
+                <p>Designed for Industrial Excellence</p>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

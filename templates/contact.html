@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us | Gangotri Firestone (Hexochems)</title>
+    <meta name="description" content="Get in touch with Gangotri Firestone LLP. Submit inquiry details for pricing, specifications, or customized building chemical solutions.">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Outfit:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="/static/css/style.css">
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- Global Live Background Canvas -->
+    <canvas id="live-canvas"></canvas>
+
+    <!-- --- Header / Navbar --- -->
+    <header class="header scrolled always-scrolled">
+        <div class="container nav-container">
+            <a href="/" class="logo-link">
+                <img src="/static/images/hexochems_logo.png" alt="Hexochems Logo" class="logo-img" onerror="this.style.display='none'">
+                <div>
+                    <h1 class="logo-text">GANGOTRI <span>FIRESTONE LLP</span></h1>
+                    <span class="logo-subtitle">Hexochems Brand Products</span>
+                </div>
+            </a>
+            <nav class="nav-menu">
+                <a href="/" class="nav-link">Home</a>
+                <a href="/products" class="nav-link">Products</a>
+                <a href="/about" class="nav-link">About Us</a>
+                <a href="/contact" class="nav-link active">Contact Us</a>
+                <a href="/admin" class="btn btn-secondary" style="padding: 0.5rem 1.5rem; font-size: 0.85rem;">Admin Panel</a>
+            </nav>
+            <div class="nav-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- --- Contact & Inquiry Section --- -->
+    <section class="contact section-padding" style="padding-top: 130px; min-height: 80vh;">
+        <div class="container">
+            <div class="contact-grid">
+                
+                <!-- Contact Info Panel -->
+                <div class="contact-info-panel">
+                    <span class="section-badge">Get in Touch</span>
+                    <h3>Have an Inquiry? Contact Our Team</h3>
+                    <p>Whether you require superplasticizers for high-strength concrete or specialized integral waterproofing compounds, we are here to support your project. Send us an inquiry and our technical staff will contact you.</p>
+                    
+                    <div class="contact-details">
+                        <div class="contact-item">
+                            <div class="contact-icon"><i class="fas fa-map-marker-alt"></i></div>
+                            <div>
+                                <h4 class="contact-item-title">Registered Office & Factory</h4>
+                                <p class="contact-item-value">Survey no. 5, 5/1 4A, Ground floor,<br>Panvel mumbra road, kiravali Gaon,<br>Navi Mumbai - 401208, Maharashtra, India.</p>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <div class="contact-icon"><i class="fas fa-phone-alt"></i></div>
+                            <div>
+                                <h4 class="contact-item-title">Phone & Support</h4>
+                                <p class="contact-item-value">+91 91378 67822</p>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <div class="contact-icon"><i class="fas fa-envelope"></i></div>
+                            <div>
+                                <h4 class="contact-item-title">Business Email</h4>
+                                <p class="contact-item-value">gangotrifirestone@gmail.com</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Inquiry Form Panel -->
+                <div class="contact-form-wrapper glass-panel">
+                    <h3 style="margin-bottom: 2rem; text-align: center;" class="gradient-text">Product Inquiry Form</h3>
+                    
+                    <!-- Form Status Messages -->
+                    <div id="form-status-msg" class="form-status"></div>
+
+                    <form id="inquiry-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="form-name" class="form-label">Full Name *</label>
+                                <input type="text" id="form-name" class="form-input" placeholder="Your name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="form-company" class="form-label">Company Name</label>
+                                <input type="text" id="form-company" class="form-input" placeholder="Your company">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="form-email" class="form-label">Email Address</label>
+                                <input type="email" id="form-email" class="form-input" placeholder="Your email">
+                            </div>
+                            <div class="form-group">
+                                <label for="form-phone" class="form-label">Phone Number *</label>
+                                <input type="tel" id="form-phone" class="form-input" placeholder="Your phone number" required>
+                            </div>
+                        </div>
+
+                        <!-- Select Products of Interest -->
+                        <div class="form-group">
+                            <label class="form-label">Products of Interest</label>
+                            <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.5rem;">Select one or more products to receive specific details and pricing.</p>
+                            <div class="product-selection-grid">
+                                {% for product in products %}
+                                <label class="product-checkbox-label">
+                                    <input type="checkbox" name="products" value="{{ product.name }}">
+                                    <span>{{ product.name }} ({{ product.code }})</span>
+                                </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="form-message" class="form-label">Inquiry Message *</label>
+                            <textarea id="form-message" class="form-input" placeholder="Detail your project requirements, quantities needed, or questions..." required></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">Submit Inquiry <i class="fas fa-paper-plane"></i></button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- --- Footer --- -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <h4>GANGOTRI <span>FIRESTONE</span></h4>
+                    <p class="footer-desc">One of Gujarat and Maharashtra's oldest and most reliable manufacturers of premium dry-mix block joining mortars, tile adhesives, and liquid superplasticizers.</p>
+                    <p class="footer-desc"><i class="fas fa-certificate" style="color: var(--accent-orange); margin-right: 0.5rem;"></i> ISO 9001:2015 Quality Management Certified.</p>
+                </div>
+                <div>
+                    <h5 class="footer-heading">Quick Links</h5>
+                    <ul class="footer-links">
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/products">Products</a></li>
+                        <li><a href="/about">About Us</a></li>
+                        <li><a href="/contact">Contact Us</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="footer-heading">Products</h5>
+                    <ul class="footer-links">
+                        <li><a href="/products">Liquid Admixtures</a></li>
+                        <li><a href="/products">Waterproofing Compounds</a></li>
+                        <li><a href="/products">Curing Compounds</a></li>
+                        <li><a href="/products">Bonding Agents</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="footer-heading">Business Hours</h5>
+                    <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Monday - Saturday</p>
+                    <p style="font-size: 0.9rem; color: var(--text-primary); font-weight: bold;">09:00 AM - 06:00 PM</p>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2026 Gangotri Firestone LLP. All Rights Reserved. Brand Name: Hexochems.</p>
+                <p>Designed for Industrial Excellence</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="/static/js/main.js"></script>
+</body>
+</html>

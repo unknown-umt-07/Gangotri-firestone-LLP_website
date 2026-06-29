@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+env/
+venv/
+.venv/
+.env
+
+# VSCode
+.vscode/
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Local data / credentials (DO NOT commit)
+firebase_credentials.json
+local_db.json
+uploads/
+*.sqlite3
+
+# Pip cache
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Byte-compiled / optimized / DLL files
+*.pyc
+*.pyo
+*.pyd
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
