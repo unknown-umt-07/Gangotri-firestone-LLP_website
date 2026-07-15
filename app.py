@@ -1,4 +1,5 @@
 import os
+import tempfile
 import uuid
 # pyrefly: ignore [missing-import]
 from flask import Flask, render_template, request, jsonify, redirect, url_for, session
@@ -44,8 +45,14 @@ def sort_products(products):
     return sorted(products, key=key)
 
 
-# Ensure uploads folder exists
-UPLOAD_FOLDER = os.path.join(app.root_path, 'static', 'uploads')
+# Ensure uploads folder exists. Vercel/serverless environments use /tmp.
+UPLOAD_FOLDER = os.environ.get("UPLOAD_FOLDER")
+if not UPLOAD_FOLDER:
+    if os.environ.get("VERCEL"):
+        UPLOAD_FOLDER = os.path.join(tempfile.gettempdir(), "gangotri_firestone", "uploads")
+    else:
+        UPLOAD_FOLDER = os.path.join(app.root_path, 'static', 'uploads')
+
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 

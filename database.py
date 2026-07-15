@@ -1,5 +1,6 @@
 import os
 import json
+import tempfile
 import threading
 from datetime import datetime, timezone
 
@@ -12,9 +13,15 @@ class Database:
         base_dir = os.path.dirname(os.path.abspath(__file__))
         if not os.path.isabs(credentials_path):
             credentials_path = os.path.join(base_dir, credentials_path)
-        if not os.path.isabs(local_db_path):
+
+        local_db_override = os.environ.get("LOCAL_DB_PATH")
+        if local_db_override:
+            local_db_path = local_db_override
+        elif os.environ.get("VERCEL"):
+            local_db_path = os.path.join(tempfile.gettempdir(), "gangotri_firestone", "local_db.json")
+        elif not os.path.isabs(local_db_path):
             local_db_path = os.path.join(base_dir, local_db_path)
-            
+
         self.credentials_path = credentials_path
         self.local_db_path = local_db_path
         self.use_firebase = False
@@ -371,6 +378,20 @@ class Database:
             data["products"][product_id] = product
         return self._write_local_db(data)
 
+    def _load_firebase_credentials(self):
+        """Return Firebase credentials from env var or a local file path if available."""
+        credentials_json = os.environ.get("FIREBASE_CREDENTIALS_JSON", "").strip()
+        if credentials_json:
+            try:
+                return json.loads(credentials_json)
+            except Exception as e:
+                print(f"Database: Invalid FIREBASE_CREDENTIALS_JSON. Error: {e}")
+
+        if os.path.exists(self.credentials_path):
+            return self.credentials_path
+
+        return None
+
     def init_db(self):
         # Check if Firebase is explicitly disabled via environment variable
         use_firebase_env = os.environ.get("USE_FIREBASE", "true").lower()
@@ -380,8 +401,8 @@ class Database:
             self._ensure_local_db()
             return
 
-        # Check if Firebase credentials file exists
-        if os.path.exists(self.credentials_path):
+        firebase_credentials = self._load_firebase_credentials()
+        if firebase_credentials is not None:
             try:
                 # pyrefly: ignore [missing-import]
                 import firebase_admin
@@ -390,7 +411,7 @@ class Database:
                 
                 # Check if firebase is already initialized to avoid duplicate app errors
                 if not firebase_admin._apps:
-                    cred = credentials.Certificate(self.credentials_path)
+                    cred = credentials.Certificate(firebase_credentials)
                     self.firebase_app = firebase_admin.initialize_app(cred)
                 self.db = firestore.client()
                 
@@ -404,7 +425,7 @@ class Database:
             except Exception as e:
                 print(f"Database: Failed to connect to Firebase Firestore. Error: {e}. Falling back to local storage.")
         else:
-            print("Database: firebase_credentials.json not found. Using local JSON storage.")
+            print("Database: Firebase credentials not found. Using local JSON storage.")
         
         self.use_firebase = False
         self._ensure_local_db()
@@ -412,6 +433,10 @@ class Database:
     def _ensure_local_db(self):
         """Ensures that local_db.json exists and is formatted correctly."""
         with _db_lock:
+            parent_dir = os.path.dirname(self.local_db_path)
+            if parent_dir:
+                os.makedirs(parent_dir, exist_ok=True)
+
             if not os.path.exists(self.local_db_path):
                 default_data = {
                     "products": {},
