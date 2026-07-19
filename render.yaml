@@ -3,11 +3,16 @@ services:
     name: gangotri-firestone-llp
     runtime: python
     rootDirectory: website
-    buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn app:app
+    # Use a robust build step: upgrade packaging tools then install requirements
+    buildCommand: |
+      python -m pip install -U pip setuptools wheel
+      pip install -r requirements.txt
+    # Use eventlet worker for Socket.IO compatibility
+    startCommand: gunicorn -k eventlet -w 1 app:app
     envVars:
       - key: PYTHON_VERSION
-        value: 3.10.0
+        # Recommend Python 3.11 for binary compatibility with some wheels
+        value: 3.11.4
       - key: FLASK_SECRET_KEY
         generateValue: true
       - key: ADMIN_PASSCODE
