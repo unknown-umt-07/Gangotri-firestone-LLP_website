@@ -1,7 +1,7 @@
 # Gangotri Firestone LLP — Hexochems Website
 
 ![CI](https://github.com/unknown-umt-07/Gangotri-firestone-LLP_website/actions/workflows/ci.yml/badge.svg)
-![Deploy](https://github.com/unknown-umt-07/Gangotri-firestone-LLP_website/actions/workflows/deploy-vercel.yml/badge.svg)
+![Deploy](https://github.com/unknown-umt-07/Gangotri-firestone-LLP_website/actions/workflows/deploy-render.yml/badge.svg)
 
 This repository contains the static and Flask templates for the Gangotri Firestone (Hexochems) website.
 

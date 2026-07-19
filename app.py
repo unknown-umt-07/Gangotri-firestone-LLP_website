@@ -3,6 +3,7 @@ import tempfile
 import uuid
 # pyrefly: ignore [missing-import]
 from flask import Flask, render_template, request, jsonify, redirect, url_for, session
+from flask_socketio import SocketIO
 from database import Database
 
 app = Flask(__name__)
@@ -13,6 +14,9 @@ ADMIN_PASSCODE = os.environ.get("ADMIN_PASSCODE", "admin123")
 
 # Initialize database
 db = Database()
+
+# Initialize Socket.IO for realtime updates
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 # Helper to check if admin is logged in
 def is_admin_logged_in():
@@ -45,10 +49,10 @@ def sort_products(products):
     return sorted(products, key=key)
 
 
-# Ensure uploads folder exists. Vercel/serverless environments use /tmp.
+# Ensure uploads folder exists and use a writable temp location in hosted environments.
 UPLOAD_FOLDER = os.environ.get("UPLOAD_FOLDER")
 if not UPLOAD_FOLDER:
-    if os.environ.get("VERCEL"):
+    if os.environ.get("RENDER"):
         UPLOAD_FOLDER = os.path.join(tempfile.gettempdir(), "gangotri_firestone", "uploads")
     else:
         UPLOAD_FOLDER = os.path.join(app.root_path, 'static', 'uploads')
@@ -227,6 +231,11 @@ def save_product():
             
         success = db.add_product(product_id, product_data)
         if success:
+            # Notify connected clients that products changed
+            try:
+                socketio.emit('products_updated', {"action": "save", "product_id": product_id}, broadcast=True)
+            except Exception:
+                pass
             return jsonify({"success": True, "product_id": product_id})
         return jsonify({"success": False, "error": "Failed to save product"}), 500
         
@@ -241,6 +250,11 @@ def delete_product(product_id):
     try:
         success = db.delete_product(product_id)
         if success:
+            # Notify connected clients that a product was deleted
+            try:
+                socketio.emit('products_updated', {"action": "delete", "product_id": product_id}, broadcast=True)
+            except Exception:
+                pass
             return jsonify({"success": True})
         return jsonify({"success": False, "error": "Product not found"}), 404
     except Exception as e:
@@ -251,5 +265,5 @@ def page_not_found(e):
     return render_template('404.html'), 404
 
 if __name__ == '__main__':
-    # Start web server
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    # Start web server with Socket.IO support (uses eventlet if installed)
+    socketio.run(app, debug=True, host='0.0.0.0', port=5000)

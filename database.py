@@ -17,7 +17,7 @@ class Database:
         local_db_override = os.environ.get("LOCAL_DB_PATH")
         if local_db_override:
             local_db_path = local_db_override
-        elif os.environ.get("VERCEL"):
+        elif os.environ.get("RENDER"):
             local_db_path = os.path.join(tempfile.gettempdir(), "gangotri_firestone", "local_db.json")
         elif not os.path.isabs(local_db_path):
             local_db_path = os.path.join(base_dir, local_db_path)

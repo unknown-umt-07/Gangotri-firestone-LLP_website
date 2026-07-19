@@ -8,12 +8,13 @@ jobs:
   deploy:
     name: Trigger Render Deploy
     runs-on: ubuntu-latest
+    env:
+      RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+      RENDER_SERVICE_ID: ${{ secrets.RENDER_SERVICE_ID }}
+    concurrency: deploy
     steps:
       - uses: actions/checkout@v4
       - name: Trigger Render Deploy via API
-        env:
-          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
-          RENDER_SERVICE_ID: ${{ secrets.RENDER_SERVICE_ID }}
         run: |
           if [ -z "$RENDER_API_KEY" ] || [ -z "$RENDER_SERVICE_ID" ]; then
             echo "Missing Render secrets (RENDER_API_KEY or RENDER_SERVICE_ID). Skipping deploy."
