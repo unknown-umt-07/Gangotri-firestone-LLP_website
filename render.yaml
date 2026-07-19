@@ -4,9 +4,8 @@ services:
     runtime: python
     rootDirectory: website
     # Use a robust build step: upgrade packaging tools then install requirements
-    buildCommand: |
-      python -m pip install -U pip setuptools wheel
-      pip install -r requirements.txt
+    # Use '&&' to ensure commands run sequentially in one shell line on Render
+    buildCommand: python -m pip install -U pip setuptools wheel && pip install -r requirements.txt
     # Use eventlet worker for Socket.IO compatibility
     startCommand: gunicorn -k eventlet -w 1 app:app
     envVars:
