@@ -5,8 +5,8 @@ services:
     # Explicit Python version for Render to use (prevents defaulting to 3.14)
     pythonVersion: 3.11.4
     rootDirectory: website
-    # Use a robust build step: run the install commands in a bash shell so separators work
-    buildCommand: bash -lc "python -m pip install -U pip setuptools wheel && pip install -r requirements.txt"
+    # Use a robust build step: call the repository build helper script
+    buildCommand: bash render_build.sh
     # Use eventlet worker for Socket.IO compatibility
     startCommand: gunicorn -k eventlet -w 1 app:app
     envVars:
