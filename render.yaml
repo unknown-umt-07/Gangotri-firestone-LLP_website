@@ -2,10 +2,11 @@ services:
   - type: web
     name: gangotri-firestone-llp
     runtime: python
+    # Explicit Python version for Render to use (prevents defaulting to 3.14)
+    pythonVersion: 3.11.4
     rootDirectory: website
-    # Use a robust build step: upgrade packaging tools then install requirements
-    # Use '&&' to ensure commands run sequentially in one shell line on Render
-    buildCommand: python -m pip install -U pip setuptools wheel && pip install -r requirements.txt
+    # Use a robust build step: run the install commands in a bash shell so separators work
+    buildCommand: bash -lc "python -m pip install -U pip setuptools wheel && pip install -r requirements.txt"
     # Use eventlet worker for Socket.IO compatibility
     startCommand: gunicorn -k eventlet -w 1 app:app
     envVars:
