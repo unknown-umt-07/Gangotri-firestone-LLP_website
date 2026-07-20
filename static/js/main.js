@@ -39,6 +39,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Contact Inquiry Form Handler ---
     initInquiryForm();
+    
+    // --- Realtime updates (Socket.IO) ---
+    initRealtime();
 });
 
 /**
@@ -119,6 +122,89 @@ function initHeroParticles() {
     }
 
     animate();
+}
+
+/**
+ * Initialize realtime Socket.IO connection and handlers
+ */
+function initRealtime() {
+    // Only run if Socket.IO client is available
+    if (typeof io === 'undefined') return;
+
+    try {
+        const socket = io();
+
+        socket.on('connect', () => {
+            console.log('Realtime: connected', socket.id);
+        });
+
+        socket.on('products_updated', (data) => {
+            console.log('Realtime: products_updated', data);
+            // Fetch latest products and update grid
+            fetch('/api/products')
+                .then(r => r.json())
+                .then(resp => {
+                    if (resp && resp.success && Array.isArray(resp.products)) {
+                        renderProductsGrid(resp.products);
+                    } else {
+                        // fallback: reload page
+                        console.warn('Realtime: failed to refresh products, reloading page');
+                        window.location.reload();
+                    }
+                }).catch(err => {
+                    console.error('Realtime fetch error', err);
+                });
+        });
+
+    } catch (err) {
+        console.error('Realtime init error', err);
+    }
+}
+
+/**
+ * Render products array into the grid (replaces existing .products-grid content)
+ */
+function renderProductsGrid(products) {
+    const grid = document.querySelector('.products-grid');
+    if (!grid) return;
+
+    // Build HTML for each product (keeps same structure used by server templates)
+    const html = products.map(product => {
+        const categoryClass = (product.category === 'Liquid Base') ? 'liquid' : 'powder';
+        const imgSrc = (product.category === 'Liquid Base') ? '/static/images/carbo.png' : '/static/images/powder_bag.webp';
+        const badge = `<span class="product-category-badge">${escapeHtml(product.category || '')}</span>`;
+
+        return `<div class="product-card glass-panel ${categoryClass}">
+                    <div class="product-img-container">
+                        <img src="${imgSrc}" alt="Product Image" style="max-height: 100%; object-fit: contain;" onerror="this.onerror=null; this.src='/static/images/hexochems_logo.png'">
+                        ${badge}
+                    </div>
+                    <div class="product-info">
+                        <span class="product-code">Code: ${escapeHtml(product.code || '')}</span>
+                        <h4 class="product-card-title">${escapeHtml(product.name || '')}</h4>
+                        <p class="product-card-desc">${escapeHtml(product.description || '')}</p>
+                        <div class="product-card-footer">
+                            <a href="/product/${encodeURIComponent(product.id)}" class="product-more-link">Technical Specs <i class="fas fa-chevron-right"></i></a>
+                        </div>
+                    </div>
+                </div>`;
+    }).join('\n');
+
+    grid.innerHTML = html;
+
+    // Re-bind filters so tabs keep working after replacing grid
+    initProductFilters();
+}
+
+// Simple HTML escape helper
+function escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
 }
 
 /**

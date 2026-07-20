@@ -4,7 +4,6 @@ services:
     runtime: python
     # Explicit Python version for Render to use (prevents defaulting to 3.14)
     pythonVersion: 3.11.4
-    rootDirectory: website
     # Use a robust build step: call the repository build helper script
     buildCommand: bash render_build.sh
     # Use eventlet worker for Socket.IO compatibility

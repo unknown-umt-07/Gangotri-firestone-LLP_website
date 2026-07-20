@@ -94,8 +94,8 @@ a {
 
 img {
     max-width: 100%;
-    height: 100px;
-    width:100
+    height: auto;
+    display: block;
 }
 
 ul {
@@ -120,53 +120,15 @@ ul {
 
 .gradient-text {
     background: linear-gradient(135deg, var(--text-primary) 30%, var(--accent-orange) 100%);
-    -webkit-b    .text-center {
-        text-align: center;
-    }
-    
-    .gradient-text {
-        background: linear-gradient(135deg, var(--text-primary) 30%, var(--accent-orange) 100%);
-        background-clip: text;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
-    
-    .gradient-text-teal {
-        background: linear-gradient(135deg, var(--text-primary) 30%, var(--accent-teal) 100%);
-        background-clip: text;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }background-clip: text;
+    background-clip: text;
+    -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
 .gradient-text-teal {
     background: linear-gradient(135deg, var(--text-primary) 30%, var(--accent-teal) 100%);
-    -we    .gradient-text {
-        background: linear-gradient(135deg, var(--text-primary) 30%, var(--accent-orange) 100%);
-        background-clip: text;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
-    
-    .gradient-text-teal {
-        background: linear-gradient(135deg, var(--text-primary) 30%, var(--accent-teal) 100%);
-        background-clip: text;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }-webki    .gradient-text {
-        background: linear-gradient(135deg, var(--text-primary) 30%, var(--accent-orange) 100%);
-        background-clip: text;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
-    
-    .gradient-text-teal {
-        background: linear-gradient(135deg, var(--text-primary) 30%, var(--accent-teal) 100%);
-        background-clip: text;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }background-clip: text;
+    background-clip: text;
+    -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
@@ -726,17 +688,8 @@ ul {
     margin-bottom: 1.5rem;
     flex-grow: 1;
     display: -webkit-box;
-    -webki    .product-card-desc {
-        font-size: 0.9rem;
-        color: var(--text-secondary);
-        margin-bottom: 1.5rem;
-        flex-grow: 1;
-        display: -webkit-box;
-        -webkit-line-clamp: 3;
-        line-clamp: 3;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-    }line-clamp: 3;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
